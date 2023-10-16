@@ -1,30 +1,57 @@
-import cartRepository from "../repositories/cart.repository";
 import { CartEntity } from "../schemas/cart.entity";
 import { v4 as uuidv4 } from 'uuid';
 import { OrderEntity } from "../schemas/order.entity";
-import orderService from "./order.service";
+import { cartDbRepository, ordersDbRepository } from "../orm/postgreSQL.orm";
 
 export class CartService {
-  createCart(userId: string): CartEntity {
+  async createCart(userId: string): Promise<CartEntity> {
     const newCart: CartEntity = {
       id: uuidv4(),
       userId,
       isDeleted: false,
       items: [],
     };
-    return cartRepository.getCartByUserId(userId) || cartRepository.createCart(newCart);
+
+    const existingCart = await cartDbRepository.getCartByUserId(userId)
+    if (existingCart) {
+      return existingCart;
+    }
+    return await cartDbRepository.createCart(newCart);
   }
 
-  getCartByUserId(userId: string): CartEntity | undefined {
-    return cartRepository.getCartByUserId(userId);
+  async getCartByUserId(userId: string): Promise<CartEntity> {
+    return await cartDbRepository.getCartByUserId(userId);
   }
 
-  updateCart(cart: CartEntity, newCart: CartEntity): CartEntity | undefined {
-    return cartRepository.updateCart(cart, newCart);
+  async updateCart(existingCard: CartEntity): Promise<CartEntity> {
+    console.log('Updating cart', existingCard);
+    return cartDbRepository.updateCart(existingCard);
   }
 
-  createOrder(cart: CartEntity): OrderEntity {
-    return orderService.createOrder(cart);
+  async createOrder(cart: CartEntity): Promise<OrderEntity | undefined>{
+    const order: OrderEntity = {
+      id: uuidv4(),
+      userId: cart.userId,
+      cartId: cart.id,
+      items: cart.items.map(e => ({ ...e })),
+      payment: {
+        type: 'paypal',
+        address: 'Poland',
+        creditCard: '***-****-****-1234'
+      },
+      delivery: {
+        type: 'post',
+        address: 'KRK'
+      },
+      comments: '',
+      status: 'created',
+      total: cart.items.length
+    }
+    try {
+      return await ordersDbRepository.createOrder(order);
+    } catch (error) {
+      console.error('ERROR ON ORDER CREATION', error);
+    }
   }
 }
 
