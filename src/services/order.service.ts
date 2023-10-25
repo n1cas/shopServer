@@ -1,17 +1,16 @@
-import orderRepository from "../repositories/order.repository";
+import { ordersDbRepository } from "../orm/postgreSQL.orm";
 import { CartEntity } from "../schemas/cart.entity";
 import { OrderEntity } from "../schemas/order.entity";
 import { v4 as uuidv4 } from 'uuid'
 
 
 export class OrderService {
-  createOrder = (cart: CartEntity): OrderEntity => {
-    cart.isDeleted = true;
+  async createOrder(cart: CartEntity): Promise<OrderEntity> {
     const order: OrderEntity = {
       id: uuidv4(),
       userId: cart.userId,
       cartId: cart.id,
-      items: cart.items.map(e => ({...e})),
+      items: cart.items,
       payment: {
         type: 'paypal',
         address: 'Poland',
@@ -25,7 +24,12 @@ export class OrderService {
       status: 'created',
       total: cart.items.length
     }
-    return orderRepository.createOrder(order);
+    try {
+      return await ordersDbRepository.createOrder(order);
+    } catch (error) {
+      console.error('createOrder error', error);
+      throw new Error('createOrder error');
+    }
   }
 }
 
