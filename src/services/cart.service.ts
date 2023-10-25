@@ -1,7 +1,8 @@
 import { CartEntity } from "../schemas/cart.entity";
 import { v4 as uuidv4 } from 'uuid';
 import { OrderEntity } from "../schemas/order.entity";
-import { cartDbRepository, ordersDbRepository } from "../orm/postgreSQL.orm";
+import { cartMongoDbRepository } from "../repositories/cart.mongo.db.repository";
+import { orderMongoDbRepository } from "../repositories/order.mongo.db.repository";
 
 export class CartService {
   async createCart(userId: string): Promise<CartEntity> {
@@ -12,20 +13,23 @@ export class CartService {
       items: [],
     };
 
-    const existingCart = await cartDbRepository.getCartByUserId(userId)
+    // const existingCart = await cartDbRepository.getCartByUserId(userId) //postgreSQL
+    const existingCart = await cartMongoDbRepository.getCartByUserId(userId);
     if (existingCart) {
       return existingCart;
     }
-    return await cartDbRepository.createCart(newCart);
+    // return await cartDbRepository.createCart(newCart);
+    return await cartMongoDbRepository.createCart(newCart);
   }
 
   async getCartByUserId(userId: string): Promise<CartEntity> {
-    return await cartDbRepository.getCartByUserId(userId);
+    // return await cartDbRepository.getCartByUserId(userId); //postgreSQL
+    return await cartMongoDbRepository.getCartByUserId(userId);
   }
 
   async updateCart(existingCard: CartEntity): Promise<CartEntity> {
-    console.log('Updating cart', existingCard);
-    return cartDbRepository.updateCart(existingCard);
+    // return cartDbRepository.updateCart(existingCard); //postgreSQL
+    return cartMongoDbRepository.updateCart(existingCard);
   }
 
   async createOrder(cart: CartEntity): Promise<OrderEntity | undefined>{
@@ -36,7 +40,7 @@ export class CartService {
       items: cart.items.map(e => ({ ...e })),
       payment: {
         type: 'paypal',
-        address: 'Poland',
+        address: 'lviv',
         creditCard: '***-****-****-1234'
       },
       delivery: {
@@ -48,7 +52,8 @@ export class CartService {
       total: cart.items.length
     }
     try {
-      return await ordersDbRepository.createOrder(order);
+      // return await ordersDbRepository.createOrder(order); //postgreSQL
+      return await orderMongoDbRepository.createOrder(order);
     } catch (error) {
       console.error('ERROR ON ORDER CREATION', error);
     }
