@@ -1,4 +1,5 @@
 import { ordersDbRepository } from "../orm/postgreSQL.orm";
+import { orderMongoDbRepository } from "../repositories/order.mongo.db.repository";
 import { CartEntity } from "../schemas/cart.entity";
 import { OrderEntity } from "../schemas/order.entity";
 import { v4 as uuidv4 } from 'uuid'
@@ -25,7 +26,8 @@ export class OrderService {
       total: cart.items.length
     }
     try {
-      return await ordersDbRepository.createOrder(order);
+      // return await ordersDbRepository.createOrder(order); //postgreSQL
+      return await orderMongoDbRepository.createOrder(order);
     } catch (error) {
       console.error('createOrder error', error);
       throw new Error('createOrder error');
