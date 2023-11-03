@@ -41,3 +41,7 @@ export const cartSchema = Joi.object({
   isDeleted: Joi.boolean().required(),
   items: Joi.array().items(cartItemSchema).required(),
 });
+
+export interface DeleteCartByAdminResponse {
+  deleted: boolean;
+}

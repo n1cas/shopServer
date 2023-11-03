@@ -1,5 +1,5 @@
 import Cart from "../mongoose/cart.schema";
-import { CartEntity } from "../schemas/cart.entity";
+import { CartEntity, DeleteCartByAdminResponse } from "../schemas/cart.entity";
 
 export class CartMongoDbRepository {
   constructor() {}
@@ -33,6 +33,16 @@ export class CartMongoDbRepository {
         isDeleted: existingCart.isDeleted
       });
       return existingCart;
+    } catch (e) {
+      console.error('Error while updating cart', e);
+      throw new Error('Error while updating cart');
+    }
+  }
+  
+  async deleteCardById(existingCart: CartEntity): Promise<DeleteCartByAdminResponse> {
+    try {
+      await Cart.deleteOne( {id: existingCart.id});
+      return {deleted: true};
     } catch (e) {
       console.error('Error while updating cart', e);
       throw new Error('Error while updating cart');

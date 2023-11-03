@@ -1,8 +1,8 @@
 import express, { Request, Response, Application } from 'express';
 import morgan from 'morgan';
 import log4js from 'log4js';
-import * as dotenv from 'dotenv';
 import Routes from './routes';
+import dotenv from "dotenv";
 import { initPostgreSqlOrm } from './orm/postgreSQL.orm';
 import { RequestContext } from '@mikro-orm/core';
 import mongoose from 'mongoose';
@@ -40,6 +40,13 @@ app.get("/", (req: Request, res: Response): void => {
 
 
 async function main(): Promise<void> {
+  try {
+    dotenv.config();
+    console.log('DOT ENV CONFIGURED');
+  } catch (e) {
+    console.error('DOT ENV CONFIG ERROR', e);
+  }
+
   try {
     await mongoose.connect('mongodb://mongoadmin:bdung@localhost:27017/?authMechanism=DEFAULT');
     console.log('MONGO CONNECTED');
