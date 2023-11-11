@@ -1,0 +1,8 @@
+**/**/node_modules
+.idea/*
+**/activityMonitor.log
+**/**/output.txt
+**/**/coverage
+**/**/dist
+dist
+node_modules
