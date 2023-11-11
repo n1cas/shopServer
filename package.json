@@ -8,6 +8,8 @@
     "dev": "nodemon ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
+    "lint": "npx prettier ./src --check",
+    "lint:fix": "npx prettier ./src --write",
     "mikro-orm:create-tables": "npx mikro-orm schema:update --run",
     "mikro-orm:seed-tables": "npx mikro-orm seeder:run",
     "mongo:seeder": "ts-node src/mongoose/seeder.ts",
@@ -27,7 +29,8 @@
     "eslint": "^8.50.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "winston": "^3.11.0"
   },
   "dependencies": {
     "@mikro-orm/cli": "^5.8.8",
@@ -39,6 +42,7 @@
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "husky": "^8.0.3",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "log4js": "^6.9.1",
