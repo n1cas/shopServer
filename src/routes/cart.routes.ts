@@ -1,9 +1,10 @@
 import { Router } from "express";
 import CartController from "../controllers/cart.controller";
+import { verifyAbilityToDeleteCart } from "../middlewares/cart.middleware";
 
 class CartRoutes {
   router = Router();
-  controller = new CartController();
+  controller: CartController = new CartController();
 
   constructor() {
     this.initializeRoutes();
@@ -15,6 +16,7 @@ class CartRoutes {
     this.router.put('/', this.controller.updateCart);
     this.router.delete('/', this.controller.deleteAllItems);
     this.router.post('/checkout', this.controller.checkoutCart);
+    this.router.delete('/cart/:id', verifyAbilityToDeleteCart, this.controller.deleteCartById);
   }
 }
 

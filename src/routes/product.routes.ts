@@ -1,6 +1,5 @@
 import { Router } from "express";
 import ProductController from "../controllers/product.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
 
 class ProductRoutes {
   router = Router();

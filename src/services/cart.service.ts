@@ -1,4 +1,4 @@
-import { CartEntity } from "../schemas/cart.entity";
+import { CartEntity, DeleteCartByAdminResponse } from "../schemas/cart.entity";
 import { v4 as uuidv4 } from 'uuid';
 import { OrderEntity } from "../schemas/order.entity";
 import { cartMongoDbRepository } from "../repositories/cart.mongo.db.repository";
@@ -58,6 +58,10 @@ export class CartService {
       console.error('ERROR ON ORDER CREATION', error);
     }
   }
+
+  async deleteCardById(existingCard: CartEntity): Promise<DeleteCartByAdminResponse> {
+    return cartMongoDbRepository.deleteCardById(existingCard);
+  };
 }
 
 export default new CartService();

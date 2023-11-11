@@ -7,7 +7,7 @@ import orderService from "../services/order.service";
 export default class CartController {
 
   async createCart(req: Request, res: Response): Promise<void> {
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.user.id;
 
     try {
       const cart = await cartService.createCart(userId);
@@ -18,8 +18,8 @@ export default class CartController {
   }
 
   async getCart(req: Request, res: Response): Promise<void>  {
-    const userId = req.headers['x-user-id'] as string;
-  
+    const userId = req.user.id;
+
     try {
       let cart = await cartService.getCartByUserId(userId);
   
@@ -36,7 +36,7 @@ export default class CartController {
 
   async updateCart(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.user.id;
       const existingCart = await cartService.getCartByUserId(userId);
       if (!existingCart) {
         res.status(404).json({ data: null, error: { message: 'Cart not found' } });
@@ -64,7 +64,7 @@ export default class CartController {
   }
 
   async deleteAllItems (req: Request, res: Response): Promise<void> {
-    const userId = req.headers['x-user-id'] as string;
+    const userId = req.user.id;
     const existingCart = await cartService.getCartByUserId(userId);
   
     if (!existingCart) {
@@ -85,7 +85,7 @@ export default class CartController {
 
   async checkoutCart(req: Request, res: Response) {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.user.id;
       const existingCart = await cartService.getCartByUserId(userId);
   
       if (!existingCart || existingCart.items.length === 0) {
@@ -103,4 +103,21 @@ export default class CartController {
       res.status(500).json({ data: null, error: { message: 'Something went wrong' } });
     }
   }
+
+  deleteCartById = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user.id;
+    const existingCart = await cartService.getCartByUserId(userId);
+  
+    if (!existingCart) {
+      res.status(404).json({ data: null, error: { message: 'Cart not found' }});
+      return;
+    }
+  
+    try {
+      const result = await cartService.deleteCardById(existingCart);
+      res.status(200).json({ data: result, error: null });
+    } catch (error) {
+      res.status(500).json({ data: null, error: { message: 'Something went wrong' } });
+    }
+  };
 }
